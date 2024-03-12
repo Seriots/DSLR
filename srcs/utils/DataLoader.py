@@ -137,20 +137,21 @@ class DataLoader:
                 )
             except ValueError:
                 continue
+        self.computed_data = computed_data
         return computed_data
 
     @checkCSV
     def load_data(self, data_path):
         try:
             self.data = pandas.read_csv(data_path)
+            start = 0
             if (self.data.columns[0] == "Index"):
-                self.data.drop(self.data.columns[0], axis=1, inplace=True)
+                start = 1
 
             self.by_column = {}
-            for i in range(len(self.data.columns)):
+            for i in range(start, len(self.data.columns)):
 
                 self.by_column[self.data.columns[i]] = self.data[self.data.columns[i]]
 
-            self.computed_data = self.compute_data()
         except Exception as e:
             print(f"Error: {e}")

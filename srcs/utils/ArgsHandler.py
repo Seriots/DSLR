@@ -43,8 +43,6 @@ class ArgsHandler:
 	def parse_args(self) -> dict:
 		"""Read on sys.argv and return a dict with the arguments and options parsed with the expected type. If an error is found, raise a ValueError."""
 		input = {}
-		for opt in self.all_option:
-			input[opt.fullname] = opt.default
 		input['args'] = []
 		last_option = None
 		for value in sys.argv[1:]:
@@ -54,12 +52,16 @@ class ArgsHandler:
 					last_option = self.all_option[[opt.fullname for opt in self.all_option].index(value)]
 					if last_option.expected_type is bool:
 						input[last_option.fullname] = True
+					else:
+						input[last_option.fullname] = last_option.default
 			elif value.startswith('-'):
 				value = value[1:]
 				if value in [opt.name for opt in self.all_option]:
 					last_option = self.all_option[[opt.name for opt in self.all_option].index(value)]
 					if last_option.expected_type is bool:
 						input[last_option.fullname] = True
+					else:
+						input[last_option.fullname] = last_option.default
 			else:
 				if last_option is None:
 					input['args'].append(value)
