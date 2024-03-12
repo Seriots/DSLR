@@ -8,7 +8,7 @@ def main():
         ArgsObject('data_path', 'Path to the dataset.')
     ], [
         OptionObject('help', 'Show this help message.', name='h', expected_type=bool, default=False, check_function=display_helper),
-        OptionObject('plot-size', 'Size of the plot', name='s', expected_type=int, default=-1),
+        OptionObject('plot-size', 'Size of the plot', name='s', expected_type=float, default=-1),
         OptionObject('data', """All features that you want to display in the pair plot\n
                             All available features are:
                                 Arithmancy, Astronomy, Herbology, Defense Against the Dark Arts,
