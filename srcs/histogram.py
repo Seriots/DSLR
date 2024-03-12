@@ -32,7 +32,7 @@ def split_by_house(data):
 
 
 def main():
-    args_handler = ArgsHandler('Read a csv and write a desxcription of it', [
+    args_handler = ArgsHandler('Make an histogram for all features about hogwarts houses', [
         ArgsObject('data_path', 'Path to the dataset.')
     ], [
         OptionObject('help', 'Show this help message.', name='h', expected_type=bool, default=False, check_function=display_helper),
