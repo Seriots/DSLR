@@ -1,5 +1,12 @@
 import sys
+import types
 from dataclasses import dataclass, field
+
+
+def display_helper(args_handler) -> None:
+	"""Display the help message."""
+	print(args_handler, end='')
+	raise SystemExit
 
 
 @dataclass
@@ -8,6 +15,8 @@ class OptionObject:
 	description: str = field(default='')
 	name: str = field(default=None)
 	expected_type: str = field(default=bool)
+	default: str = field(default=None)
+	check_function: types.FunctionType = field(default=None)
 
 
 @dataclass
@@ -22,7 +31,7 @@ class ArgsHandler:
 	You can also add an extended help message.
 
 	ArgsObject are the arguments that the program will take.
-	
+
 	OptionObject are the options that the program will take.
 	"""
 	def __init__(self, description: str, all_args: list, all_option: list, extended_help: str = ''):
@@ -34,6 +43,8 @@ class ArgsHandler:
 	def parse_args(self) -> dict:
 		"""Read on sys.argv and return a dict with the arguments and options parsed with the expected type. If an error is found, raise a ValueError."""
 		input = {}
+		for opt in self.all_option:
+			input[opt.fullname] = opt.default
 		input['args'] = []
 		last_option = None
 		for value in sys.argv[1:]:
@@ -64,11 +75,15 @@ class ArgsHandler:
 							input[last_option.fullname] = []
 						input[last_option.fullname].append(value)
 					else:
-						raise ValueError(f"Unknown type: {last_option.expected_type}")		
+						raise ValueError(f"Unknown type: {last_option.expected_type}")
 		return input
 
 	def check_args(self, input: dict) -> None:
 		"""Check if the args are correct. If not, raise a ValueError."""
+		for opt in self.all_option:
+			if opt.fullname in input and opt.check_function is not None:
+				if input[opt.fullname] is True:
+					opt.check_function(self)
 		if len(input['args']) != len(self.all_args):
 			raise ValueError(f"Expected {len(self.all_args)} arguments, got {len(input['args'])}.")
 
@@ -77,7 +92,7 @@ class ArgsHandler:
 		usage = f"Usage: python3 {sys.argv[0]} " + " ".join([f"{arg.name}" for arg in self.all_args]) + " [OPTIONS]"
 		options = "Options:\n" + "\n".join([f"  {f'-{opt.name}, ' if opt.name != None else '   '} --{opt.fullname}  {opt.description}" for opt in self.all_option])
 		args = "Arguments:\n" + "\n".join([f"  {arg.name}  {arg.description}" for arg in self.all_args])
-		return(f"""\
+		return (f"""\
 {usage}
 
 {self.description}
@@ -87,12 +102,12 @@ class ArgsHandler:
 {options}
 
 {self.extended_help}""")
-	
+
 	def light_help(self) -> str:
 		"""Return the light_help message."""
 		usage = f"Usage: python3 {sys.argv[0]} " + " ".join([f"{arg.name}" for arg in self.all_args]) + " [OPTIONS]"
 		options = "Options:\n  " + ", ".join(filter(lambda x: x != '', [f"{f'-{opt.name}' if opt.name != None else ''}" for opt in self.all_option]))
-		return(f"""\
+		return (f"""\
 {usage}
 
 {options}""")
