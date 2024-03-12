@@ -73,9 +73,10 @@ class ArgsHandler:
 					elif last_option.expected_type == str:
 						input[last_option.fullname] = value
 					elif last_option.expected_type == list:
-						if last_option.fullname not in input:
-							input[last_option.fullname] = []
-						input[last_option.fullname].append(value)
+						if input[last_option.fullname] is None:
+							input[last_option.fullname] = [value]
+						else:
+							input[last_option.fullname].append(value)
 					else:
 						raise ValueError(f"Unknown type: {last_option.expected_type}")
 		return input
