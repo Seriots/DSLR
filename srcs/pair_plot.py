@@ -30,6 +30,7 @@ def main():
         return
     print("Data loaded")
 
+    print(user_input['data'])
     if 'data' not in user_input:
         features = ['Astronomy', 'Herbology']
     elif user_input['data'] == ['*']:

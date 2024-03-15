@@ -7,7 +7,7 @@ from utils.LogisticRegression import LogisticRegression
 
 data = pd.read_csv('data/dataset_train.csv')
 
-used_features = ['Astronomy', 'Herbology', 'Defense Against the Dark Arts', 'Divination', 'Muggle Studies', 'Ancient Runes', 'History of Magic', 'Transfiguration', 'Potions', 'Care of Magical Creatures', 'Charms', 'Flying']
+used_features = ['Astronomy', 'Herbology', 'Defense Against the Dark Arts', 'Ancient Runes', 'History of Magic', 'Transfiguration', 'Care of Magical Creatures']
 
 data = data.dropna(subset=used_features)
 
