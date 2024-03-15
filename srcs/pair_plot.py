@@ -50,7 +50,7 @@ def main():
     if 'plot-size' in user_input and user_input['plot-size'] > 0:
         plot_size = user_input['plot-size']
     else:
-        plot_size = 12/len(features)
+        plot_size = 8/len(features)
 
     sns.pairplot(data.data, x_vars=features, y_vars=features, hue='Hogwarts House', height=plot_size)
 
