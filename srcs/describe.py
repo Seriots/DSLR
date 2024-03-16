@@ -7,7 +7,7 @@ def main():
         ArgsObject('data_path', 'Path to the dataset.')
     ], [
         OptionObject('help', 'Show this help message.', name='h', expected_type=bool, default=False, check_function=display_helper),
-        OptionObject('output', 'The file to save the description', name='o', expected_type=str, default='log.txt'),
+        OptionObject('output', 'The file to save the description', name='o', expected_type=str, default=None),
     ], """""")
 
     try:
@@ -37,7 +37,7 @@ def main():
 
     print(output, end='')
 
-    if 'output' in user_input and user_input['output'] is not None:
+    if 'output' in user_input:
         with open(user_input['output'], 'w') as f:
             f.write(output)
 

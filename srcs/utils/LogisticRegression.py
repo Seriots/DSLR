@@ -5,11 +5,10 @@ class LogisticRegression:
         self.data = data
         self.learning_rate = learning_rate
         self.weights = np.zeros(data.shape[1] - 1)
-        print(self.weights)
         self.bias = 0
 
     def predict(self, x: np.ndarray) -> np.ndarray:
-        return 1 / (1 + np.exp(-np.dot(x, self.weights) - self.bias))
+        return (1 / (1 + np.exp(-np.dot(x, self.weights) - self.bias)))
     
     def train(self, epochs=1000) -> None:
         x = self.data.iloc[:, 1:].values.astype(float)
@@ -20,4 +19,3 @@ class LogisticRegression:
             
             self.weights -= tmp_weights
             self.bias -= tmp_bias
-        print(self.weights, self.bias)

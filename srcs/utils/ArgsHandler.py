@@ -45,6 +45,10 @@ class ArgsHandler:
 		input = {}
 		input['args'] = []
 		last_option = None
+		for value in self.all_option:
+			if value.default is not None:
+				input[value.fullname] = value.default
+
 		for value in sys.argv[1:]:
 			if value.startswith('--'):
 				value = value[2:]

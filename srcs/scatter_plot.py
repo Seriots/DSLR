@@ -45,9 +45,16 @@ def main():
     if data.data is None:
         return
 
-    data_to_plot = data.data[['Arithmancy', 'Astronomy', 'Herbology', 'Defense Against the Dark Arts', 
+    all_features = ['Arithmancy', 'Astronomy', 'Herbology', 'Defense Against the Dark Arts', 
                                 'Divination', 'Muggle Studies', 'Ancient Runes', 'History of Magic',
-                                'Transfiguration', 'Potions', 'Care of Magical Creatures', 'Charms', 'Flying']]
+                                'Transfiguration', 'Potions', 'Care of Magical Creatures', 'Charms', 'Flying']
+
+    for all_feature in all_features:
+        if all_feature not in data.data.columns:
+            print(f"Feature {all_feature} not found in the dataset")
+            return
+
+    data_to_plot = data.data[all_features]
     
     if 'main-feature' in user_input:
         if user_input['main-feature'] == '*':

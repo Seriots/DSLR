@@ -150,7 +150,6 @@ class DataLoader:
 
             self.by_column = {}
             for i in range(start, len(self.data.columns)):
-
                 self.by_column[self.data.columns[i]] = self.data[self.data.columns[i]]
 
         except Exception as e:
