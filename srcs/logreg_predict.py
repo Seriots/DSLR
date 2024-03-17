@@ -8,10 +8,10 @@ from utils.utils import formate_data, predict_class
 
 def main():
 	args_handler = ArgsHandler('Train a model on a dataset for DSLR project the model predict the hogwarts house', [
-		ArgsObject('data_path', 'Path to the dataset.')
+		ArgsObject('data_path', 'Path to the dataset.'),
+		ArgsObject('save', 'Path to the model to load.')
 	], [
 		OptionObject('help', 'Show this help message.', name='h', expected_type=bool, default=False, check_function=display_helper),
-		OptionObject('save', 'File where the model is saved', name='s', expected_type=str, default='model.pkl'),
 		OptionObject('output', 'File where the prediction is saved', name='o', expected_type=str, default='houses.csv')
 	], """""")
 
@@ -28,7 +28,7 @@ def main():
 	if data.data is None:
 		return
 
-	with open(user_input['save'], 'rb') as file:
+	with open(user_input['args'][1], 'rb') as file:
 		try:
 			model = pickle.load(file)
 			feature = model['features']
