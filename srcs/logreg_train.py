@@ -4,47 +4,8 @@ import pickle
 from utils.LogisticRegression import LogisticRegression
 from utils.DataLoader import DataLoader
 from utils.ArgsHandler import ArgsHandler, ArgsObject, OptionObject, display_helper
+from utils.utils import formate_data, predict_class
 
-
-def check_data(func):
-	"""Check if the data is correct before training the model
-		- Check if the Hogwarts House is in the dataset
-		- Check if the features are in the dataset
-		- Check if there is data to use for the training
-		- Remove the data with missing values"""
-	def wrapper(data, features):
-		if 'Hogwarts House' not in data.columns:
-			raise ValueError("Hogwarts House not found in the dataset")
-		if len(features) == 0:
-			raise ValueError("No features to use for the training")
-		for feature in features:
-			if feature not in data.columns:
-				raise ValueError(f"Feature {feature} not found in the dataset")
-		data = data.dropna(subset=features + ['Hogwarts House'])
-		if len(data) == 0:
-			raise ValueError("No data to use for the training")
-		return func(data, features)
-	return wrapper
-
-
-@check_data
-def formate_data(data, features):
-	"""Formate the data for the training. Normalize the features."""
-	x_values = data[features]
-	y_value = data["Hogwarts House"]
-	x_values = x_values.apply(lambda x: (x - x.mean()) / x.std())
-
-	slytherin = y_value.apply(lambda x: "1" if str(x) == "Slytherin" else "0")
-	gryffindor = y_value.apply(lambda x: "1" if str(x) == "Gryffindor" else "0")
-	ravenclaw = y_value.apply(lambda x: "1" if str(x) == "Ravenclaw" else "0")
-	hufflepuff = y_value.apply(lambda x: "1" if str(x) == "Hufflepuff" else "0")
-	
-	gryffindor = pd.concat([gryffindor, x_values], axis=1)
-	slytherin = pd.concat([slytherin, x_values], axis=1)
-	hufflepuff = pd.concat([hufflepuff, x_values], axis=1)
-	ravenclaw = pd.concat([ravenclaw, x_values], axis=1)
-
-	return gryffindor, slytherin, hufflepuff, ravenclaw
 
 def main():
 	args_handler = ArgsHandler('Train a model on a dataset for DSLR project the model predict the hogwarts house', [
@@ -55,6 +16,8 @@ def main():
 		OptionObject('learning_rate', 'Learning rate for the training.', name='l', expected_type=float, default=0.01),
 		OptionObject('save', 'Save the model in a file.', name='s', expected_type=str, default='model.pkl'),
 		OptionObject('features', 'Features to use for the training.', name='f', expected_type=list, default=['Astronomy', 'Herbology']),
+		OptionObject('validation-percent', 'Percentage of the dataset to use for the validation.', name='p', expected_type=float, default=0.2),
+		OptionObject('verbose', 'Show the progress of the training.', name='v', expected_type=bool, default=False)
 	], """""")
 
 	try:
@@ -69,8 +32,25 @@ def main():
 	data = DataLoader(user_input['args'][0])
 	if data.data is None:
 		return
+	
+	if user_input['verbose']:
+		print("Data loaded")
+
+	data_train = data.data.sample(frac=1 - user_input['validation-percent'])
+	data_validation = data.data.drop(data_train.index)
+
 	try:
-		gryffindor, slytherin, hufflepuff, ravenclaw = formate_data(data.data, user_input['features'])
+		x_values, y_value = formate_data(data_train, user_input['features'])
+
+		slytherin = y_value.apply(lambda x: "1" if str(x) == "Slytherin" else "0")
+		gryffindor = y_value.apply(lambda x: "1" if str(x) == "Gryffindor" else "0")
+		ravenclaw = y_value.apply(lambda x: "1" if str(x) == "Ravenclaw" else "0")
+		hufflepuff = y_value.apply(lambda x: "1" if str(x) == "Hufflepuff" else "0")
+		
+		gryffindor = pd.concat([gryffindor, x_values], axis=1)
+		slytherin = pd.concat([slytherin, x_values], axis=1)
+		hufflepuff = pd.concat([hufflepuff, x_values], axis=1)
+		ravenclaw = pd.concat([ravenclaw, x_values], axis=1)
 	except ValueError as e:
 		print(e)
 		return
@@ -89,14 +69,36 @@ def main():
 	RavenclawModel.train(epochs)
 
 	saved_model = {
-		"Gryffindor": GryffindorModel,
-		"Slytherin": SlytherinModel,
-		"Hufflepuff": HufflepuffModel,
-		"Ravenclaw": RavenclawModel
+		'model': {
+			"Gryffindor": GryffindorModel,
+			"Slytherin": SlytherinModel,
+			"Hufflepuff": HufflepuffModel,
+			"Ravenclaw": RavenclawModel
+			},
+		"features": user_input['features']
 	}
 
 	with open(user_input['save'], 'wb') as file:
 		pickle.dump(saved_model, file)
+
+	if user_input['verbose']:
+		print(f"Model saved in {user_input['save']}")
+
+	x_values, y_value = formate_data(data_validation, user_input['features'])
+
+	RED = "\33[31m"
+	GREEN = "\33[32m"
+	END = "\33[0m"
+
+	count = 0
+	if user_input['verbose']:
+		print("Validation:")
+		prediction = x_values.apply(lambda x: predict_class(x, saved_model), axis=1)
+		for i in range(len(x_values)):
+			count += 1 if prediction.iloc[i] == y_value.iloc[i] else 0
+			print(f"	{GREEN if prediction.iloc[i] == y_value.iloc[i] else RED}Predicted: {prediction.iloc[i]} - {y_value.iloc[i]} :Real{END}")
+
+		print(f"Accuracy: {count / len(x_values) * 100:.2f}%")
 
 
 if __name__ == "__main__":
