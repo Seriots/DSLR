@@ -10,6 +10,8 @@ def default_features(args_handler, user_input):
 	"""Set the default features if the user didn't provide any."""
 	if 'features' not in user_input or user_input['features'] is None:
 		user_input['features'] = ['Herbology', 'Astronomy']
+	elif user_input['features'] == ['*']:
+		user_input['features'] = ['Arithmancy','Astronomy','Herbology','Defense Against the Dark Arts','Divination','Muggle Studies','Ancient Runes','History of Magic','Transfiguration','Potions','Care of Magical Creatures','Charms','Flying']
 	return user_input
 
 def check_mode(args_handler, user_input):
@@ -71,7 +73,7 @@ def main():
 
 	learning_rate = user_input['learning_rate']
 	epochs = user_input['epochs']
-	mode = ["stochastic"] if user_input['stochastic-mode'] else ["mini-batch", user_input['batch-mode']] if user_input['batch-mode'] > 0 else ["batch"]
+	mode = ['stochastic'] if user_input['stochastic-mode'] else ["mini-batch", user_input['batch-mode']] if user_input['batch-mode'] > 0 else ['batch']
 
 	# Train the model for each house
 	GryffindorModel = LogisticRegression(gryffindor, learning_rate)
@@ -83,6 +85,12 @@ def main():
 	SlytherinModel.train(epochs, mode)
 	HufflepuffModel.train(epochs, mode)
 	RavenclawModel.train(epochs, mode)
+
+	if user_input['verbose']:
+		print(f"Gryffindor Model: weight = {GryffindorModel.weights}, bias = {GryffindorModel.bias}")
+		print(f"Slytherin Model: weight = {SlytherinModel.weights}, bias = {SlytherinModel.bias}")
+		print(f"Ravenclaw Model: weight = {RavenclawModel.weights}, bias = {RavenclawModel.bias}")
+		print(f"Hufflepuff Model: weight = {HufflepuffModel.weights}, bias = {HufflepuffModel.bias}")
 
 	model = {
 			"Ravenclaw": RavenclawModel,

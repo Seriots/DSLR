@@ -25,26 +25,33 @@ class LogisticRegression:
 
     def __mini_batch_gradient_descent(self, x: np.ndarray, y: np.ndarray, epochs, batch_size) -> None:
         for _ in range(epochs):
-            i = np.random.choice(x.shape[0], batch_size)
-            s_x = x[i]
-            s_y = y[i]
-            tmp_weights = self.learning_rate * np.dot(s_x.T, self.predict(s_x) - s_y) / s_y.size
-            tmp_bias = self.learning_rate * np.sum(self.predict(s_x) - s_y) / s_y.size
-            
-            self.weights -= tmp_weights
-            self.bias -= tmp_bias
+            all_values = np.array(list(range(0, x.shape[0])))
+            np.random.shuffle(all_values)
+            for i in range(0, len(all_values), batch_size):
+                j = all_values[i:min(i+batch_size, len(all_values))]
+                s_x = x[j]
+                s_y = y[j]
+                tmp_weights = self.learning_rate * np.dot(s_x.T, self.predict(s_x) - s_y) / s_y.size
+                tmp_bias = self.learning_rate * np.sum(self.predict(s_x) - s_y) / s_y.size
+                
+                self.weights -= tmp_weights
+                self.bias -= tmp_bias
             self.error_history.append(self.error(x, y))
 
     def __stochastic_gradient_descent(self, x: np.ndarray, y: np.ndarray, epochs) -> None:
+
         for _ in range(epochs):
-            i = np.random.choice(x.shape[0], 1)[0]
-            s_x = x[i]
-            s_y = y[i]
-            tmp_weights = self.learning_rate * s_x * (self.predict(s_x) - s_y)
-            tmp_bias = self.learning_rate * (self.predict(s_x) - s_y)
+            all_values = np.array(list(range(0, x.shape[0])))
+            np.random.shuffle(all_values)
+
+            for i in all_values:
+                s_x = x[i]
+                s_y = y[i]
+                tmp_weights = self.learning_rate * s_x * (self.predict(s_x) - s_y)
+                tmp_bias = self.learning_rate * (self.predict(s_x) - s_y)
             
-            self.weights -= tmp_weights
-            self.bias -= tmp_bias
+                self.weights -= tmp_weights
+                self.bias -= tmp_bias
             self.error_history.append(self.error(x, y))
 
     def train(self, epochs=1000, mode=['batch']) -> None:
