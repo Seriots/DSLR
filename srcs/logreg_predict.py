@@ -28,21 +28,24 @@ def main():
 	if data.data is None:
 		return
 
-	with open(user_input['args'][1], 'rb') as file:
-		try:
+	try:
+		with open(user_input['args'][1], 'rb') as file:
 			model = pickle.load(file)
 			feature = model['features']
 			model = model['model']
 
-			x_values, _ = formate_data(data.data, feature)
+
+			x_values, _ = formate_data(data.data, feature, False)
+
+			x_values = x_values.fillna(x_values.mean())
 
 			predictions: pd.Series = x_values.apply(lambda x: predict_class(x, model), axis=1)
 			predictions = predictions.to_frame()
 			predictions.columns = ['Hogwarts House']
 			predictions.to_csv(user_input['output'], header=True, index=True, index_label='Index', )
-		except Exception as e:
-			print(e)
-			exit(1)
+	except Exception as e:
+		print(e)
+		exit(1)
 
 
 if __name__ == "__main__":

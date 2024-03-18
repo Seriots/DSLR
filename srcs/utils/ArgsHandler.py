@@ -3,10 +3,12 @@ import types
 from dataclasses import dataclass, field
 
 
-def display_helper(args_handler) -> None:
+def display_helper(args_handler, input_user) -> None:
 	"""Display the help message."""
-	print(args_handler, end='')
-	raise SystemExit
+	if 'help' in input_user and input_user['help']:
+		print(args_handler, end='')
+		raise SystemExit
+	return input_user
 
 
 @dataclass
@@ -88,9 +90,8 @@ class ArgsHandler:
 	def check_args(self, input: dict) -> None:
 		"""Check if the args are correct. If not, raise a ValueError."""
 		for opt in self.all_option:
-			if opt.fullname in input and opt.check_function is not None:
-				if input[opt.fullname] is True:
-					opt.check_function(self)
+			if opt.check_function is not None:
+				input = opt.check_function(self, input)
 		if len(input['args']) != len(self.all_args):
 			raise ValueError(f"Expected {len(self.all_args)} arguments, got {len(input['args'])}.")
 
