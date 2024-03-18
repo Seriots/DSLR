@@ -13,7 +13,7 @@ def main():
                             All available features are:
                                 Arithmancy, Astronomy, Herbology, Defense Against the Dark Arts,
                                 Divination, Muggle Studies, Ancient Runes, History of Magic,
-                                Transfiguration, Potions, Care of Magical Creatures, Charms, Flying""", name='d', expected_type=list),
+                                Transfiguration, Potions, Care of Magical Creatures, Charms, Flying""", name='f', expected_type=list),
     ], """""")
 
     try:
@@ -30,7 +30,6 @@ def main():
         return
     print("Data loaded")
 
-    print(user_input['data'])
     if 'data' not in user_input:
         features = ['Astronomy', 'Herbology']
     elif user_input['data'] == ['*']:
@@ -53,7 +52,7 @@ def main():
     else:
         plot_size = 8/len(features)
 
-    sns.pairplot(data.data, x_vars=features, y_vars=features, hue='Hogwarts House', height=plot_size)
+    sns.pairplot(data.data, x_vars=features, y_vars=features, hue='Hogwarts House', height=plot_size, plot_kws={'s': 5})
 
     print("Data plotted")
     try:

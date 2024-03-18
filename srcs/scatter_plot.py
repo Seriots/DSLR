@@ -29,7 +29,7 @@ def main():
                             All available feature are:
                                 Arithmancy, Astronomy, Herbology, Defense Against the Dark Arts,
                                 Divination, Muggle Studies, Ancient Runes, History of Magic,
-                                Transfiguration, Potions, Care of Magical Creatures, Charms, Flying""", name='m', expected_type=str, default='*'),
+                                Transfiguration, Potions, Care of Magical Creatures, Charms, Flying""", name='f', expected_type=str, default='*'),
     ], """""")
 
     try:
