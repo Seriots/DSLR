@@ -66,9 +66,11 @@ class ColumnData:
     median: float
     q3: float
     max: float
-    #skewness: float
-    #kurtosis: float
-    #mode: float
+    variance: float
+    iqr: float
+    dtype: str
+    skewness: float
+    kurtosis: float
 
 
 class DataLoader:
@@ -97,6 +99,9 @@ class DataLoader:
     def std(self, column: pandas.DataFrame):
         return (self.sum([(x - self.mean(column))**2 for x in column]) / (self.count(column) - 1))**0.5
 
+    def variance(self, column: pandas.DataFrame):
+        return self.sum([(x - self.mean(column))**2 for x in column]) / (self.count(column) - 1)
+
     def min(self, column: pandas.DataFrame):
         min = column[0]
         for i in column:
@@ -121,12 +126,14 @@ class DataLoader:
                 max = i
         return max
     
-    #def skew(self, column: pandas.DataFrame):
-    #    return self.sum([(x - self.mean(column))**3 for x in column]) / (self.count(column) * self.std(column)**3)
+    def iqr(self, column: pandas.DataFrame):
+        return self.quantile(column, 0.75) - self.quantile(column, 0.25)
 
-    #def kurtosis(self, column: pandas.DataFrame):
-    #    # β2 = (E(x)4 / (E(x)2)2) − 3,
-    #    return 0
+    def skew(self, column: pandas.DataFrame):
+        return self.sum([(x - self.mean(column))**3 for x in column]) / (self.count(column) * self.std(column)**3)
+
+    def kurtosis(self, column: pandas.DataFrame):
+        return self.sum([(x - self.mean(column))**4 for x in column]) / (self.count(column) * self.std(column)**4) - 3
     
     def compute_data(self):
         computed_data = {}
@@ -134,7 +141,7 @@ class DataLoader:
             try:
                 _ = float(value[0])
                 filtered_column: pandas.DataFrame = self.data[key].dropna()
-                #filtered_column = sort_columns(filtered_column, self.count(filtered_column))
+                filtered_column = sort_columns(filtered_column, self.count(filtered_column))
                 computed_data[key] = ColumnData(
                     self.count(filtered_column),
                     self.mean(filtered_column),
@@ -144,8 +151,11 @@ class DataLoader:
                     self.quantile(filtered_column, 0.50),
                     self.quantile(filtered_column, 0.75),
                     self.max(filtered_column),
-                    #self.skew(filtered_column),
-                    #self.kurtosis(filtered_column),
+                    self.variance(filtered_column),
+                    self.iqr(filtered_column),
+                    self.data[key].dtype.name,
+                    self.skew(filtered_column),
+                    self.kurtosis(filtered_column),
                 )
             except ValueError:
                 continue

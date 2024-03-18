@@ -24,20 +24,25 @@ def main():
         return
     data.compute_data()
 
-    output = f"         " + "".join([f"{key: >14.8s}" for key in data.computed_data.keys()]) + "\n"
-    output += "\n"
-    output += "Count: " + "".join([f"{value.count: >14d}" for value in data.computed_data.values()]) + "\n"
-    output += "Mean:  " + "".join([f"{value.mean: >14.4f}" for value in data.computed_data.values()]) + "\n"
-    output += "Std:   " + "".join([f"{value.std: >14.4f}" for value in data.computed_data.values()]) + "\n"
-    output += "Min:   " + "".join([f"{value.min: >14.4f}" for value in data.computed_data.values()]) + "\n"
-    output += "25%:   " + "".join([f"{value.q1: >14.4f}" for value in data.computed_data.values()]) + "\n"
-    output += "50%:   " + "".join([f"{value.median: >14.4f}" for value in data.computed_data.values()]) + "\n"
-    output += "75%:   " + "".join([f"{value.q3: >14.4f}" for value in data.computed_data.values()]) + "\n"
-    output += "Max:   " + "".join([f"{value.max: >14.4f}" for value in data.computed_data.values()]) + "\n"
+    print(data.data.describe())
+
+    #output = f"         " + "".join([f"{key: >14.8s}" for key in data.computed_data.keys()]) + "\n"
+    #output += "\n"
+    #output += "Count: " + "".join([f"{value.count: >14d}" for value in data.computed_data.values()]) + "\n"
+    #output += "Mean:  " + "".join([f"{value.mean: >14.4f}" for value in data.computed_data.values()]) + "\n"
+    #output += "Std:   " + "".join([f"{value.std: >14.4f}" for value in data.computed_data.values()]) + "\n"
+    #output += "Min:   " + "".join([f"{value.min: >14.4f}" for value in data.computed_data.values()]) + "\n"
+    #output += "25%:   " + "".join([f"{value.q1: >14.4f}" for value in data.computed_data.values()]) + "\n"
+    #output += "50%:   " + "".join([f"{value.median: >14.4f}" for value in data.computed_data.values()]) + "\n"
+    #output += "75%:   " + "".join([f"{value.q3: >14.4f}" for value in data.computed_data.values()]) + "\n"
+    #output += "Max:   " + "".join([f"{value.max: >14.4f}" for value in data.computed_data.values()]) + "\n"
+    #output += "Var:   " + "".join([f"{value.variance: >14.4f}" for value in data.computed_data.values()]) + "\n"
+    #output += "IQR:   " + "".join([f"{value.iqr: >14.4f}" for value in data.computed_data.values()]) + "\n"
     #output += "Skew:  " + "".join([f"{value.skewness: >14.4f}" for value in data.computed_data.values()]) + "\n"
     #output += "Kurt:  " + "".join([f"{value.kurtosis: >14.4f}" for value in data.computed_data.values()]) + "\n"
+    #output += "dtype: " + "".join([f"{value.dtype: >14}" for value in data.computed_data.values()]) + "\n"
 
-    print(output, end='')
+    #print(output, end='')
 
     if 'output' in user_input:
         with open(user_input['output'], 'w') as f:
