@@ -59,16 +59,15 @@ def main():
         return
 
     fig = plt.figure(figsize=(10, 5))
-
     for i, column in enumerate(house_data['Columns']):
         if (i >= 15):
             break
         ax = fig.add_subplot(3, 5, i+1)
         plt.subplots_adjust(wspace=0.5, hspace=0.8)
-        sns.histplot(house_data['Gryffindor'][column], kde=True, label='Gryffindor', legend=True)
-        sns.histplot(house_data['Ravenclaw'][column], kde=True, label='Ravenclaw', legend=True)
-        sns.histplot(house_data['Hufflepuff'][column], kde=True, label='Hufflepuff', legend=True)
-        sns.histplot(house_data['Slytherin'][column], kde=True, label='Slytherin', legend=True)
+        sns.histplot(house_data['Ravenclaw'][column], kde=False, label='Ravenclaw', legend=True)
+        sns.histplot(house_data['Hufflepuff'][column], kde=False, label='Hufflepuff', legend=True)
+        sns.histplot(house_data['Slytherin'][column], kde=False, label='Slytherin', legend=True)
+        sns.histplot(house_data['Gryffindor'][column], kde=False, label='Gryffindor', legend=True)
         plt.title(column)
         plt.xlabel('Values')
         plt.ylabel('Frequency')
