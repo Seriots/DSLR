@@ -1,6 +1,6 @@
-from dataclasses import dataclass
-
 import pandas
+
+from dataclasses import dataclass
 
 
 def checkCSV(func):
@@ -66,6 +66,9 @@ class ColumnData:
     median: float
     q3: float
     max: float
+    #skewness: float
+    #kurtosis: float
+    #mode: float
 
 
 class DataLoader:
@@ -117,14 +120,21 @@ class DataLoader:
             if i > max:
                 max = i
         return max
+    
+    #def skew(self, column: pandas.DataFrame):
+    #    return self.sum([(x - self.mean(column))**3 for x in column]) / (self.count(column) * self.std(column)**3)
 
+    #def kurtosis(self, column: pandas.DataFrame):
+    #    # β2 = (E(x)4 / (E(x)2)2) − 3,
+    #    return 0
+    
     def compute_data(self):
         computed_data = {}
         for key, value in self.by_column.items():
             try:
                 _ = float(value[0])
                 filtered_column: pandas.DataFrame = self.data[key].dropna()
-                filtered_column = sort_columns(filtered_column, self.count(filtered_column))
+                #filtered_column = sort_columns(filtered_column, self.count(filtered_column))
                 computed_data[key] = ColumnData(
                     self.count(filtered_column),
                     self.mean(filtered_column),
@@ -133,7 +143,9 @@ class DataLoader:
                     self.quantile(filtered_column, 0.25),
                     self.quantile(filtered_column, 0.50),
                     self.quantile(filtered_column, 0.75),
-                    self.max(filtered_column)
+                    self.max(filtered_column),
+                    #self.skew(filtered_column),
+                    #self.kurtosis(filtered_column),
                 )
             except ValueError:
                 continue

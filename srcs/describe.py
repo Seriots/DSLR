@@ -34,6 +34,8 @@ def main():
     output += "50%:   " + "".join([f"{value.median: >14.4f}" for value in data.computed_data.values()]) + "\n"
     output += "75%:   " + "".join([f"{value.q3: >14.4f}" for value in data.computed_data.values()]) + "\n"
     output += "Max:   " + "".join([f"{value.max: >14.4f}" for value in data.computed_data.values()]) + "\n"
+    #output += "Skew:  " + "".join([f"{value.skewness: >14.4f}" for value in data.computed_data.values()]) + "\n"
+    #output += "Kurt:  " + "".join([f"{value.kurtosis: >14.4f}" for value in data.computed_data.values()]) + "\n"
 
     print(output, end='')
 
