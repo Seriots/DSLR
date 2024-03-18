@@ -7,11 +7,13 @@ from utils.ArgsHandler import ArgsHandler, ArgsObject, OptionObject, display_hel
 from utils.utils import formate_data, predict_class
 
 def default_features(args_handler, user_input):
+	"""Set the default features if the user didn't provide any."""
 	if 'features' not in user_input or user_input['features'] is None:
 		user_input['features'] = ['Herbology', 'Astronomy']
 	return user_input
 
 def check_mode(args_handler, user_input):
+	"""Generate error if the user try to use the stochastic and the batch mode at the same time."""
 	if 'stochastic-mode' in user_input and 'batch-mode' in user_input and user_input['stochastic-mode'] and user_input['batch-mode'] > 0:
 		raise ValueError("You can't use the stochastic and the batch mode at the same time")
 	return user_input
@@ -47,6 +49,7 @@ def main():
 	if user_input['verbose']:
 		print("Data loaded")
 
+	# Formate properly the data and split it into train and validation
 	data_train = data.data.sample(frac=1 - user_input['validation-percent'])
 	data_validation = data.data.drop(data_train.index)
 
@@ -70,6 +73,7 @@ def main():
 	epochs = user_input['epochs']
 	mode = ["stochastic"] if user_input['stochastic-mode'] else ["mini-batch", user_input['batch-mode']] if user_input['batch-mode'] > 0 else ["batch"]
 
+	# Train the model for each house
 	GryffindorModel = LogisticRegression(gryffindor, learning_rate)
 	SlytherinModel = LogisticRegression(slytherin, learning_rate)
 	HufflepuffModel = LogisticRegression(hufflepuff, learning_rate)
@@ -80,14 +84,46 @@ def main():
 	HufflepuffModel.train(epochs, mode)
 	RavenclawModel.train(epochs, mode)
 
-	saved_model = {
-		'model': {
+	model = {
 			"Ravenclaw": RavenclawModel,
 			"Gryffindor": GryffindorModel,
 			"Slytherin": SlytherinModel,
 			"Hufflepuff": HufflepuffModel
-			},
-		"features": user_input['features']
+		}
+
+	# Run the validatin process
+	pred_lst = []
+	real_lst = []
+	if data_validation.shape[0] >= 10:
+		x_values, y_value = formate_data(data_validation, user_input['features'], True)
+
+		RED = "\33[31m"
+		GREEN = "\33[32m"
+		END = "\33[0m"
+
+		count = 0
+		prediction = x_values.apply(lambda x: predict_class(x, model), axis=1)
+		
+		if user_input['verbose']:
+			print("Validation:")
+
+		for i in range(len(x_values)):
+			count += 1 if prediction.iloc[i] == y_value.iloc[i] else 0
+			pred_lst.append(prediction.iloc[i])
+			real_lst.append(y_value.iloc[i])
+
+			if user_input['verbose']:
+				print(f"	{GREEN if prediction.iloc[i] == y_value.iloc[i] else RED}Predicted: {prediction.iloc[i]} - {y_value.iloc[i]} :Real{END}")
+
+		if user_input['verbose']:
+			print(f"Accuracy: {count / len(x_values) * 100:.2f}%")
+
+	# Save the model
+	saved_model = {
+		"model": model,
+		"features": user_input['features'],
+		"validation_real": real_lst,
+		"validation_pred": pred_lst,
 	}
 
 	try:
@@ -99,22 +135,6 @@ def main():
 
 	if user_input['verbose']:
 		print(f"Model saved in {user_input['save']}")
-
-	if user_input['verbose'] and data_validation.shape[0] >= 10:
-		x_values, y_value = formate_data(data_validation, user_input['features'], True)
-
-		RED = "\33[31m"
-		GREEN = "\33[32m"
-		END = "\33[0m"
-
-		count = 0
-		print("Validation:")
-		prediction = x_values.apply(lambda x: predict_class(x, saved_model['model']), axis=1)
-		for i in range(len(x_values)):
-			count += 1 if prediction.iloc[i] == y_value.iloc[i] else 0
-			print(f"	{GREEN if prediction.iloc[i] == y_value.iloc[i] else RED}Predicted: {prediction.iloc[i]} - {y_value.iloc[i]} :Real{END}")
-
-		print(f"Accuracy: {count / len(x_values) * 100:.2f}%")
 
 
 if __name__ == "__main__":

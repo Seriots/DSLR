@@ -34,7 +34,6 @@ def main():
 			feature = model['features']
 			model = model['model']
 
-
 			x_values, _ = formate_data(data.data, feature, False)
 
 			x_values = x_values.fillna(x_values.mean())
@@ -42,7 +41,7 @@ def main():
 			predictions: pd.Series = x_values.apply(lambda x: predict_class(x, model), axis=1)
 			predictions = predictions.to_frame()
 			predictions.columns = ['Hogwarts House']
-			predictions.to_csv(user_input['output'], header=True, index=True, index_label='Index', )
+			predictions.to_csv(user_input['output'], header=True, index=True, index_label='Index')
 	except Exception as e:
 		print(e)
 		exit(1)
